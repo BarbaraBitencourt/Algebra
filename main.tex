@@ -1,0 +1,147 @@
+\documentclass{article}
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+
+
+
+\begin{document}
+\date{} % Remove a data padrão
+\begin{titlepage}
+    \begin{center}
+        \LARGE FATEC BAIXADA SANTISTA \\ Curso de Ciência de Dados\\
+        
+        \vspace{8cm}
+        
+        \LARGE Relatório: Análise de Componentes Principais (PCA) no Conjunto de Dados de Câncer de Mama Wisconsin\\
+        
+        \vspace{8cm}
+        
+        \large Autor: Bárbara Bento Bitencourt \\
+Matrícula: 0051352221019 \\
+Professor Orientador: Alexandre Garcia de Oliveira \\
+        
+        \vspace{2cm}
+        
+        \large Data:06/06/2023
+    \end{center}
+\end{titlepage}
+\maketitle
+
+
+\section{Introdução}
+
+Neste relatório, será apresentada uma análise utilizando a técnica de Análise de Componentes Principais (PCA) aplicada a um conjunto de dados de câncer de mama Wisconsin. O objetivo é realizar uma redução de dimensionalidade e explorar as principais características do conjunto de dados.
+
+\section{Descrição do Conjunto de Dados}
+
+O conjunto de dados utilizado neste estudo é o "Conjunto de dados de câncer de mama Wisconsin (diagnóstico)", obtido a partir do Kaggle. Ele contém informações sobre características de núcleos celulares presentes em imagens digitalizadas de aspirados com agulha fina (PAAF) de massas mamárias. O conjunto de dados contém informações sobre células e seu diagnóstico como maligno (M) ou benigno (B). Cada célula possui dez características de valor real, que são: medidas de raio, textura, perímetro, área, suavidade, compacidade, concavidade, pontos côncavos, simetria e dimensão fractal.
+
+\section{Dimensão dos Dados}
+
+O conjunto de dados possui as seguintes informações:
+Número de instâncias (amostras): 357 + 212 = 569
+Número de atributos (características): No dataset para cada imagem, foram computadas 30 características, que incluem média, erro padrão e "pior" (média dos três maiores valores) para cada uma das 10 características de valor real das células. Portanto, o número de atributos (características) é 30. \\ Distribuição de classes: 357 benignas, 212 malignas
+
+
+\subsection{Visualização das primeiras linhas do conjunto de dados}
+A figura abaixo é do dados antes de normalizar e tratar os valores ausentes.
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{tabela.png}
+\caption{\label{fig:frog}Visualização das primeiras linhas elaborado no Google Colab}
+\end{figure}
+
+\newpage
+\subsection{Matriz de covariância}
+
+A matriz de covariância é uma medida estatística que descreve a relação entre as variáveis do conjunto de dados. Ela é calculada para identificar as correlações entre as características. 
+Abaixo esta uma da Matriz Quadrada Reduzida da Matriz de Covariância:
+\[
+\begin{bmatrix}
+1.88 \times 10^{-3} & 8.09 \times 10^{-4} & 1.29 \times 10^{-2} & 1.91 \times 10^{-1} & 1.56 \times 10^{-6} \\
+8.09 \times 10^{-4} & 3.50 \times 10^{-4} & 5.58 \times 10^{-3} & 8.23 \times 10^{-2} & 6.75 \times 10^{-7} \\
+1.29 \times 10^{-2} & 5.58 \times 10^{-3} & 8.93 \times 10^{-2} & 1.32 \times 10^{0} & 1.08 \times 10^{-5} \\
+1.91 \times 10^{-1} & 8.23 \times 10^{-2} & 1.32 \times 10^{0} & 1.94 \times 10^{1} & 1.59 \times 10^{-4} \\
+1.56 \times 10^{-6} & 6.75 \times 10^{-7} & 1.08 \times 10^{-5} & 1.59 \times 10^{-4} & 1.31 \times 10^{-9} \\
+\end{bmatrix}
+\]
+
+\subsection{Autovalores e Autovetores}
+
+Os autovalores e autovetores são calculados a partir da matriz de covariância e fornecem informações sobre as direções principais dos dados e suas importâncias relativas. Os autovetores são vetores que definem as direções principais (componentes principais) dos dados, enquanto os autovalores correspondentes indicam a variância explicada por cada componente principal.
+Resultados dos dois maiores Autovalores e Autovetores:\\
+
+
+Dois maiores autovalores:
+\[
+\begin{bmatrix}
+8.514679883935965 \\
+0.14025597493610117
+\end{bmatrix}
+\]
+
+Dois maiores autovetores:
+\[
+\begin{bmatrix}
+5.09e-03 & 2.20e-03 & 3.51e-02 & 5.17e-01 \\
+4.24e-06 & 4.05e-05 & 8.19e-05 & 4.78e-05 \\
+7.08e-06 & -2.62e-06 & 3.14e-04 & -6.51e-05 \\
+2.24e-03 & 5.57e-02 & -8.06e-07 & 5.52e-06 \\
+8.87e-06 & 3.28e-06 & -1.24e-06 & -8.55e-08 \\
+7.15e-03 & 3.07e-03 & 4.95e-02 & 8.52e-01 \\
+6.42e-06 & 1.01e-04 & 1.69e-04 & 7.37e-05 \\
+1.79e-05 & 1.61e-06
+\end{bmatrix}
+\]
+
+\[
+\begin{bmatrix}
+9.29e-03 & -2.88e-03 & 6.27e-02 & 8.52e-01 \\
+-1.48e-05 & -2.69e-06 & 7.51e-05 & 4.64e-05 \\
+-2.52e-05 & -1.61e-05 & -5.39e-05 & 3.48e-04 \\
+8.20e-04 & 7.51e-03 & 1.49e-06 & 1.27e-05 \\
+2.87e-05 & 9.36e-06 & 1.23e-05 & 2.90e-07 \\
+-5.69e-04 & -1.32e-02 & -1.86e-04 & -5.20e-01 \\
+-7.69e-05 & -2.56e-04 & -1.75e-04 & -3.05e-05 \\
+-1.57e-04 & -5.53e-05
+\end{bmatrix}
+\]
+
+
+\section{Plotagem}
+A plotagem está logo após a análise dos resultados obtidos. 
+
+\subsection{Resultados}
+
+A plotagem resultante do PCA mostrou os pontos amarelos (correspondentes a tumores malignos) bastante concentrados e próximos uns dos outros, enquanto os pontos roxos (correspondentes a tumores benignos) estão mais dispersos e têm algumas sobreposições com os pontos amarelos. Isso sugere que as características calculadas têm uma forte capacidade discriminativa entre tumores malignos e benignos, uma vez que os tumores malignos tendem a ser mais semelhantes entre si do que os tumores benignos.
+
+As características utilizadas para a análise incluem raio, textura, perímetro, área, suavidade, compacidade, concavidade, pontos côncavos, simetria e dimensão fractal. Essas características foram calculadas com base em imagens das células e foram selecionadas por sua relevância na distinção entre tumores malignos e benignos.
+
+Essa análise pode ser útil para auxiliar no diagnóstico de câncer de mama, uma vez que fornece insights sobre as características mais discriminativas entre os diferentes tipos de tumores. Através da redução de dimensionalidade proporcionada pelo PCA, é possível obter uma representação visual dos dados, o que pode facilitar a interpretação e tomada de decisões.
+
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=1\linewidth]{download.png}
+\caption{\label{fig:frog}Elaborado no Google Colab pela autora}
+\end{figure} 
+
+
+\bibliographystyle{alpha}
+\bibliography{sample}
+O código-fonte do projeto está disponível no GitHub no seguinte link:\\ \url{https://github.com/BarbaraBitencourt/Algebra/blob/main/an%C3%A1lise_de_componentes_principais_de_cancer_de_mama_.py}.\\
+O link para o dataset usado neste relatório no sítio eletronico Kaglle:\\ \url{https://www.kaggle.com/datasets/uciml/breast-cancer-wisconsin-data}.
+\end{document}
